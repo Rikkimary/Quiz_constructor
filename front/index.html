@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="header">
+        <h1 id="welcome-message">Добро пожаловать в Quiz App!</h1>
+        <div id="auth-buttons">
+            <button id="loginButton">Вход</button>
+            <button id="registerButton">Регистрация</button>
+        </div>
+    </div>
+    <button id="logoutButton" style="display: none">Выход</button>
+    <div class="container" id="main-content" style="display: none;">
+        <form id="register-form" style="display:none;">
+            <h2>Регистрация</h2>
+            <input type="text" id="username" placeholder="Имя пользователя" required>
+            <input type="email" id="email" placeholder="Ваш email" required>
+            <input type="password" id="password" placeholder="Пароль" required>
+            <input type="password" id="password2" placeholder="Подтверждение пароля" required>
+            <button type="submit">Зарегистрироваться</button>
+            <div id="register-message"></div>
+        </form>
+
+        <form id="login-form" style="display:none;">
+            <h2>Авторизация</h2>
+            <input type="text" id="login-username" placeholder="Имя пользователя" required>
+            <input type="password" id="login-password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+            <div id="login-message"></div>
+        </form>
+
+        <div id="quizzes-container" style="display:none;">
+            <button type="submit" id="createQuizzes">Создать новый квиз</button>
+            <form id="createQuizzes-form" style="display:none;" enctype="multipart/form-data">
+                <h2>Создание квиза</h2>
+                <input type="text" id="name_quiz" placeholder="Введите общее название квизов" required>
+                <input type="text" id="title" placeholder="Введите название теста" required>
+                <textarea id="description" placeholder="Описание квиза" required></textarea>
+                <input type="file" id="image" accept="image/*" required>
+                <button type="submit">Создать квиз</button>
+                <div id="createQuiz-message"></div>
+            </form>
+            <form id="createQuizzesQuestions-form" style="display:none;" enctype="multipart/form-data">
+                <h2>Добавление вопросов к созданному квизу</h2>
+                <input type="text" id="question" placeholder="Введите  название вопроса" required>
+                <input type="file" id="image_quest" accept="image/*" required>
+                <button type="submit">Подтвердить форму вопроса</button>
+                <div id="createQuizzesQuestions-message"></div>
+            </form>
+        </div>
+        <div id="messageElement" style="display: none; color: red;">
+
+        </div>
+    </div>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html>
+
