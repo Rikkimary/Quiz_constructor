@@ -178,11 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Response text: ", await response.text());  // Вывод текста ответа для проверки
                 console.log(1)
                 if (response.ok) {
+                    const quiz = await response.json(); // Получите данные квиза
+                    const quiztitle_pk = quiz.id; // Сохраним ID квиза
                     document.getElementById('createQuiz-message').textContent =
                         'Квиз успешно создан! Теперь добавьте вопросы к созданному квизу';
-                    createQuizzesQuestions()
-
-                    return response.json();
+                    createQuizzesQuestions(quiztitle_pk)
+                    return quiz;
+                    // return response.json();
                 } else {
                     throw new Error('Ошибка при создании квиза');
                 }
@@ -196,21 +198,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-    async function createQuizzesQuestions(){
+    async function createQuizzesQuestions(quiztitle_pk){
         createQuizzesQuestionsForm.style.display = "block";
         createQuizzesQuestionsForm.addEventListener('submit', async function(event) {
             event.preventDefault(); //блокировка пустой формы
 
             const formData = new FormData();
+            formData.append('quiz_id', quiztitle_pk);
             formData.append('question', document.getElementById('question').value);
             formData.append('image_quest', document.getElementById('image_quest').files[0]);
-            try {
-                const authorUsername =  await getCurrentUser();
-                formData.append('author', authorUsername);
-            } catch (error) {
-                document.getElementById('register-message').textContent = error.message;
-                return;
-            }
             const accessToken = localStorage.getItem('access');
             console.log("Access Token: ", accessToken);
             // console.log(${quizId})
