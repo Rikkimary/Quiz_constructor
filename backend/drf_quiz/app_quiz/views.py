@@ -61,6 +61,7 @@ class QuizTitleViewSet(viewsets.ModelViewSet):
 
 
 class QuizQuestionViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Quiz_question.objects.all()
     serializer_class = QuizQuestionSerializer
 
@@ -68,6 +69,7 @@ class QuizQuestionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Отладка: Проверяем, есть ли quiz_id в URL
         quiz_id = self.kwargs.get('quiztitle_pk')
+        print(f"Kwargs in get_queryset: {self.kwargs}")
         print(f"Quiz ID from URL: {quiz_id}")  # Отладка
         if quiz_id == None:
             raise serializers.ValidationError({"quiz_id": "Quiz ID is missing in URL"})
@@ -76,6 +78,7 @@ class QuizQuestionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Отладка: Проверяем, получаем ли правильный квиз
         quiz = get_object_or_404(Quiz_title, id=self.kwargs['quiztitle_pk'])
+        print(f"Kwargs in perform_create: {self.kwargs}")
         print(f"Creating question for quiz: {quiz.id}")  # Отладка
         # Передаем объект квиза в сериализатор через контекст
         serializer.save(quiz=quiz)

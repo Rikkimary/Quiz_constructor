@@ -9,7 +9,7 @@ router.register(r'quiztitle', QuizTitleViewSet, basename='quiztitle')
 
 # Вложенный роутер для вопросов, которые относятся к конкретному квизу
 quiz_router = routers.NestedSimpleRouter(router, r'quiztitle', lookup='quiztitle')
-quiz_router.register(r'questions', QuizQuestionViewSet, basename='quiz-questions')
+quiz_router.register(r'questions', QuizQuestionViewSet, basename='questions')
 
 
 
