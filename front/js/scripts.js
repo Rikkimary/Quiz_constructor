@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const quizzesContainer = document.getElementById('quizzes-container');
     const header = document.getElementById('header');
     const createQuizzesForm = document.getElementById('createQuizzes-form');
-
+    const createQuizzesQuestionsForm= document.getElementById('createQuizzesQuestions-form');
+    const createQuizzesQuestionsAnswersForm= document.getElementById('createQuizzesQuestionsAnswers-form');
 
     // Проверяем, авторизован ли пользователь по наличию токена
     const accessToken = localStorage.getItem('access');
@@ -162,8 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('register-message').textContent = error.message;
                 return;
             }
-
-            console.log(accessToken)
+            const accessToken = localStorage.getItem('access');
+            console.log("Access Token: ", accessToken);
+            console.log("Form Data: ", Array.from(formData.entries()));
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/quiztitle/', {
                     method: 'POST',
@@ -172,19 +174,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 });
-                console.log('Response status:', response.status);
+                console.log("Response status: ", response.status);  // Вывод статуса ответа
+                // console.log("Response text: ", await response.text());  // Вывод текста ответа для проверки
+                console.log(1)
                 if (response.ok) {
-                    console.log('Response status:', response.status);
-                    console.log(response.json());
-                    const data = await response.json();
+                    const quiz = await response.json(); // Получите данные квиза
+                    const quiztitle_pk = quiz.id; // Сохраним ID квиза
                     document.getElementById('createQuiz-message').textContent =
                         'Квиз успешно создан! Теперь добавьте вопросы к созданному квизу';
-                    createQuizzesQuestionsForm.style.display = "block";
-                    return data;
+                    createQuizzesQuestions(quiztitle_pk)
+                    return quiz;
+                    // return response.json();
                 } else {
                     throw new Error('Ошибка при создании квиза');
                 }
             } catch (error) {
+                console.log(2)
                 document.getElementById('createQuiz-message').textContent = error.message;
             }
         });
@@ -193,6 +198,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    async function createQuizzesQuestions(quiztitle_pk){
+        createQuizzesQuestionsForm.style.display = "block";
+        createQuizzesQuestionsForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); //блокировка пустой формы
+
+            const formData = new FormData();
+            formData.append('quiz_id', quiztitle_pk);
+            formData.append('question', document.getElementById('question').value);
+            formData.append('image_quest', document.getElementById('image_quest').files[0]);
+            const accessToken = localStorage.getItem('access');
+            console.log("Access Token: ", accessToken);
+            // console.log(${quizId})
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/quiztitle/${quiztitle_pk}/questions/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+                console.log("Response status: ", response.status);  // Вывод статуса ответа
+
+                if (response.ok) {
+                    document.getElementById('createQuizzesQuestions-message').textContent =
+                        'Вопрос успешно создан! Теперь добавьте варианты ответов к созданному вопросу';
+                    createQuizzesQuestionsAnswers()
+
+                    return response.json();
+                } else {
+                    throw new Error('Ошибка при создании вопроса');
+                }
+            } catch (error) {
+                document.getElementById('createQuizzesQuestions-message').textContent = error.message;
+            }
+        });
+    }
+
+    async function createQuizzesQuestionsAnswers(){
+        createQuizzesQuestionsAnswersForm.style.display = "block";
+    }
 
     async function getCurrentUser() {
         const accessToken = localStorage.getItem('access');

@@ -31,10 +31,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class QuizTitleSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
-
+    # created_at = serializers.DateField(format="%Y-%m-%d")
     class Meta:
         model = Quiz_title
         fields = ("id", "name_quiz", "title", "description", "image", "author", "created_at")
+
         print('created_at')
 
 

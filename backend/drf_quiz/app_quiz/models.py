@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from datetime import date
 from django.contrib.auth.models import User
 
 
@@ -9,7 +10,7 @@ class Quiz_title(models.Model):
     description = models.TextField(max_length=400) #Общее описание, что будем проходить
     image = models.ImageField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateField(default=timezone.now)
+    created_at = models.DateField(default=date.today)
 
 
     def __str__(self): #Пока понимаю, что это отображение в Django, если нужна доп инфо, то добавляем
