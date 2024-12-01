@@ -1,6 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from .models import Quiz_title, Quiz_question
+from .models import Quiz_title, Quiz_question, Quiz_question_answers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -54,5 +54,9 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
         # Создаем вопрос, привязанный к квизу
         return Quiz_question.objects.create(quiz=quiz, **validated_data)
 
+class QuizQuestionAnswersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz_question_answers
+        fields = ['id', 'answer1', 'answer2', 'answer3']
 
 

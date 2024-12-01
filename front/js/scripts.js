@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const createQuizzesForm = document.getElementById('createQuizzes-form');
     const createQuizzesQuestionsForm= document.getElementById('createQuizzesQuestions-form');
     const createQuizzesQuestionsAnswersForm= document.getElementById('createQuizzesQuestionsAnswers-form');
+    const submitAppendQuestionForm = document.getElementById('submitAppendQuestion-form')
 
     // Проверяем, авторизован ли пользователь по наличию токена
     const accessToken = localStorage.getItem('access');
@@ -221,9 +222,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Response status: ", response.status);  // Вывод статуса ответа
 
                 if (response.ok) {
+                    const question = await response.json(); // Получите данные вопроса
+                    const question_pk = question.id; // Сохраним ID квиза
                     document.getElementById('createQuizzesQuestions-message').textContent =
                         'Вопрос успешно создан! Теперь добавьте варианты ответов к созданному вопросу';
-                    createQuizzesQuestionsAnswers()
+                    createQuizzesQuestionsAnswers(quiztitle_pk, question_pk)
 
                     return response.json();
                 } else {
@@ -235,9 +238,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function createQuizzesQuestionsAnswers(){
+    async function createQuizzesQuestionsAnswers(quiztitle_pk, question_pk){
         createQuizzesQuestionsAnswersForm.style.display = "block";
+        createQuizzesQuestionsAnswersForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); //блокировка пустой формы
+
+            const formData = new FormData();
+            formData.append('question', question_pk);
+            formData.append('answer1', document.getElementById('answer1').value);
+            formData.append('answer2', document.getElementById('answer2').value);
+            formData.append('answer3', document.getElementById('answer3').value);
+            const accessToken = localStorage.getItem('access');
+            console.log("Access Token: ", accessToken);
+            try {
+                const response = await fetch(
+                    `http://127.0.0.1:8000/api/quiztitle/${quiztitle_pk}/questions/${question_pk}/answers/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                });
+
+                if (response.ok) {
+                    document.getElementById('createQuizzesQuestionsAnswers-message').textContent =
+                        'Ответы успешно добавлены!';
+                    createQuizzesForm.style.display = "none";
+                    createQuizzesQuestionsForm.style.display = "none";
+                    createQuizzesQuestionsAnswersForm.style.display = "none";
+                    submitAppendQuestion (quiztitle_pk)
+                } else {
+                    throw new Error('Ошибка при добавлении ответов');
+                }
+            } catch (error) {
+                document.getElementById('createQuizzesQuestionsAnswers-message').textContent = error.message;
+            }
+        });
     }
+    async function submitAppendQuestion (quiztitle_pk){
+        submitAppendQuestionForm.style.display = "block";
+        submitAppendQuestionForm.addEventListener('submit', async function(event) {
+
+
+
+        })
+    }
+
 
     async function getCurrentUser() {
         const accessToken = localStorage.getItem('access');

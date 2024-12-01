@@ -23,6 +23,11 @@ class Quiz_question(models.Model):
     def __str__(self): #Пока понимаю, что это отображение в Django, если нужна доп инфо, то добавляем
         return self.question
 
-#
+class Quiz_question_answers(models.Model):
+    question = models.ForeignKey(Quiz_question, on_delete=models.CASCADE, related_name='answers')  # Связь с вопросом
+    answer1 = models.CharField(max_length=200)
+    answer2 = models.CharField(max_length=200)
+    answer3 = models.CharField(max_length=200)
+
 
 

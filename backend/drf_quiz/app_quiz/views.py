@@ -1,17 +1,17 @@
-from django.shortcuts import render
 from rest_framework import viewsets, serializers, generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 
-from .serializers import QuizTitleSerializer, QuizQuestionSerializer, UserSerializer, UserRegistrationSerializer
-from .models import Quiz_title, Quiz_question
+from .serializers import (QuizTitleSerializer, QuizQuestionSerializer, UserSerializer, UserRegistrationSerializer,
+                          QuizQuestionAnswersSerializer)
+from .models import Quiz_title, Quiz_question, Quiz_question_answers
 from django.contrib.auth.models import User
 from  rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
-from rest_framework.permissions import AllowAny
-from rest_framework import permissions
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import action
 
 
 class UserRegistrationView(viewsets.ModelViewSet):
@@ -83,6 +83,23 @@ class QuizQuestionViewSet(viewsets.ModelViewSet):
         # Передаем объект квиза в сериализатор через контекст
         serializer.save(quiz=quiz)
 
+class QuizQuestionAnswersViewSet(viewsets.ModelViewSet):
+    queryset = Quiz_question_answers.objects.all()
+    serializer_class = QuizQuestionAnswersSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Автоматически сохраняем связанный вопрос
+        question_id = self.kwargs.get('question_pk')  # Получаем question_id из URL
+        question = get_object_or_404(Quiz_question, pk=question_id)  # Получаем объект вопроса
+        serializer.save(question=question)
+
+    @action(detail=True, methods=['get'], url_path='answers')
+    def get_answers(self, request, pk=None):
+        # Получаем все ответы, связанные с конкретным вопросом
+        answers = self.queryset.filter(question_id=pk)
+        serializer = self.get_serializer(answers, many=True)
+        return Response(serializer.data)
 
 
 
