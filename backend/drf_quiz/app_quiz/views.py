@@ -56,24 +56,24 @@ class LoginUserView(viewsets.ModelViewSet):
 
 class QuizTitleViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
-    queryset = Quiz_title.objects.all()
     serializer_class = QuizTitleSerializer
 
+    def get_queryset(self):
+        return Quiz_title.objects.filter(author=self.request.user)
 
 class QuizQuestionViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Quiz_question.objects.all()
     serializer_class = QuizQuestionSerializer
 
-
     def get_queryset(self):
         # Отладка: Проверяем, есть ли quiz_id в URL
-        quiz_id = self.kwargs.get('quiztitle_pk')
+        quiz = self.kwargs.get('quiztitle_pk')
         print(f"Kwargs in get_queryset: {self.kwargs}")
-        print(f"Quiz ID from URL: {quiz_id}")  # Отладка
-        if quiz_id == None:
+        print(f"Quiz ID from URL: {quiz}")  # Отладка
+        if quiz== None:
             raise serializers.ValidationError({"quiz_id": "Quiz ID is missing in URL"})
-        return Quiz_question.objects.filter(quiz_id=quiz_id)
+        return Quiz_question.objects.filter(quiz=quiz)
 
     def perform_create(self, serializer):
         # Отладка: Проверяем, получаем ли правильный квиз
@@ -100,8 +100,6 @@ class QuizQuestionAnswersViewSet(viewsets.ModelViewSet):
         answers = self.queryset.filter(question_id=pk)
         serializer = self.get_serializer(answers, many=True)
         return Response(serializer.data)
-
-
 
 class CurrentUserView(APIView):
     permission_classes =[AllowAny] #[permissions.IsAuthenticated]
